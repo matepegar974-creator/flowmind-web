@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlowMind — Automatizaciones con IA para empresas</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #07090f;
+    --bg2:      #0d1117;
+    --bg3:      #131920;
+    --accent:   #00e5c8;
+    --accent2:  #7b61ff;
+    --gold:     #f5c842;
+    --white:    #f0f4f8;
+    --muted:    #8892a4;
+    --border:   rgba(255,255,255,0.07);
+    --card:     rgba(255,255,255,0.04);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--white);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.2rem 6%;
+    background: rgba(7,9,15,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem; font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: .9rem; transition: color .2s; }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta {
+    background: var(--accent); color: #000;
+    padding: .55rem 1.4rem; border-radius: 6px;
+    font-weight: 600; font-size: .9rem; text-decoration: none;
+    transition: opacity .2s;
+  }
+  .nav-cta:hover { opacity: .85; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; gap: 4rem;
+    padding: 10rem 6% 6rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -20%; right: -10%;
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,229,200,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -10%; left: 20%;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(123,97,255,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(0,229,200,.1); border: 1px solid rgba(0,229,200,.2);
+    color: var(--accent); padding: .35rem .9rem; border-radius: 100px;
+    font-size: .8rem; font-weight: 500; margin-bottom: 1.5rem; letter-spacing: .05em;
+  }
+  .hero-eyebrow::before { content: '●'; font-size: .5rem; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 700; line-height: 1.1;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+
+  .hero-sub {
+    color: var(--muted); font-size: 1.1rem; line-height: 1.7;
+    margin-bottom: 2.5rem; max-width: 480px;
+  }
+
+  .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #000;
+    padding: .85rem 2rem; border-radius: 8px;
+    font-weight: 700; font-size: 1rem; text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 0 30px rgba(0,229,200,.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,229,200,.5); }
+  .btn-secondary {
+    border: 1px solid var(--border); color: var(--white);
+    padding: .85rem 2rem; border-radius: 8px;
+    font-weight: 500; font-size: 1rem; text-decoration: none;
+    transition: border-color .2s, background .2s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.05); }
+
+  .hero-stats {
+    display: flex; gap: 2.5rem; margin-top: 3rem;
+    padding-top: 2rem; border-top: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.8rem; font-weight: 700; color: var(--white);
+  }
+  .stat-label { font-size: .8rem; color: var(--muted); margin-top: .2rem; }
+
+  /* ── CHAT DEMO (signature element) ── */
+  .demo-window {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,.5);
+    position: relative; z-index: 1;
+  }
+  .demo-header {
+    background: var(--bg3); padding: 1rem 1.2rem;
+    display: flex; align-items: center; gap: .75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .demo-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem; font-weight: 700; color: #000; flex-shrink: 0;
+  }
+  .demo-name { font-weight: 600; font-size: .9rem; }
+  .demo-status { font-size: .75rem; color: var(--accent); }
+  .demo-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; margin-left: auto; }
+
+  .demo-body { padding: 1.2rem; display: flex; flex-direction: column; gap: .75rem; min-height: 320px; }
+
+  .msg { display: flex; flex-direction: column; max-width: 80%; opacity: 0; transform: translateY(8px); }
+  .msg.show { animation: msgIn .3s ease forwards; }
+  @keyframes msgIn { to { opacity:1; transform:translateY(0); } }
+  .msg.bot { align-self: flex-start; }
+  .msg.user { align-self: flex-end; }
+
+  .msg-bubble {
+    padding: .65rem 1rem; border-radius: 12px;
+    font-size: .85rem; line-height: 1.5;
+  }
+  .bot .msg-bubble { background: var(--bg3); color: var(--white); border-bottom-left-radius: 4px; }
+  .user .msg-bubble { background: var(--accent); color: #000; font-weight: 500; border-bottom-right-radius: 4px; }
+
+  .msg-time { font-size: .7rem; color: var(--muted); margin-top: .2rem; }
+  .bot .msg-time { align-self: flex-start; }
+  .user .msg-time { align-self: flex-end; }
+
+  .typing { display: flex; gap: 4px; padding: .65rem 1rem; background: var(--bg3); border-radius: 12px; width: fit-content; }
+  .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: bounce 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay: .2s; }
+  .typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+  /* ── SECCIÓN SERVICIOS ── */
+  section { padding: 6rem 6%; }
+  .section-label {
+    font-size: .8rem; font-weight: 600; letter-spacing: .15em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700; letter-spacing: -.03em;
+    margin-bottom: 1rem; line-height: 1.2;
+  }
+  .section-sub { color: var(--muted); max-width: 560px; font-size: 1rem; line-height: 1.7; }
+
+  .services-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 4rem;
+  }
+
+  .service-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2rem;
+    transition: border-color .3s, transform .3s;
+    position: relative; overflow: hidden;
+  }
+  .service-card:hover { border-color: rgba(0,229,200,.3); transform: translateY(-4px); }
+  .service-card.featured {
+    border-color: rgba(0,229,200,.3);
+    background: linear-gradient(135deg, rgba(0,229,200,.06), rgba(123,97,255,.04));
+  }
+  .service-card.featured::before {
+    content: 'Más popular';
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    background: var(--accent); color: #000;
+    font-size: .7rem; font-weight: 700; padding: .2rem .7rem; border-radius: 100px;
+  }
+
+  .service-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.5rem;
+  }
+  .icon-1 { background: rgba(0,229,200,.12); }
+  .icon-2 { background: rgba(123,97,255,.12); }
+  .icon-3 { background: rgba(245,200,66,.12); }
+
+  .service-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem; font-weight: 700; margin-bottom: .75rem;
+  }
+  .service-card p { color: var(--muted); font-size: .9rem; line-height: 1.6; margin-bottom: 1.5rem; }
+
+  .service-features { list-style: none; display: flex; flex-direction: column; gap: .5rem; margin-bottom: 2rem; }
+  .service-features li {
+    display: flex; align-items: flex-start; gap: .5rem;
+    font-size: .85rem; color: var(--muted);
+  }
+  .service-features li::before { content: '✓'; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: .1rem; }
+
+  .service-price {
+    display: flex; align-items: baseline; gap: .3rem;
+    margin-bottom: 1.5rem;
+  }
+  .price-amount {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem; font-weight: 700;
+  }
+  .price-period { color: var(--muted); font-size: .85rem; }
+
+  .btn-card {
+    display: block; text-align: center; width: 100%;
+    border: 1px solid var(--border); color: var(--white);
+    padding: .75rem; border-radius: 8px; text-decoration: none;
+    font-size: .9rem; font-weight: 500;
+    transition: background .2s, border-color .2s;
+  }
+  .btn-card:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.2); }
+  .btn-card-accent {
+    display: block; text-align: center; width: 100%;
+    background: var(--accent); color: #000;
+    padding: .75rem; border-radius: 8px; text-decoration: none;
+    font-size: .9rem; font-weight: 700;
+    transition: opacity .2s;
+  }
+  .btn-card-accent:hover { opacity: .85; }
+
+  /* ── PACK COMPLETO ── */
+  .pack-banner {
+    background: linear-gradient(135deg, rgba(0,229,200,.08), rgba(123,97,255,.08));
+    border: 1px solid rgba(0,229,200,.2);
+    border-radius: 20px; padding: 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 2rem; margin-top: 2rem; flex-wrap: wrap;
+  }
+  .pack-left h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem; font-weight: 700; margin-bottom: .5rem;
+  }
+  .pack-left p { color: var(--muted); }
+  .pack-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .pack-original { color: var(--muted); text-decoration: line-through; font-size: .9rem; }
+
+  /* ── PROCESO ── */
+  .proceso { background: var(--bg2); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 4rem; }
+  .step {
+    padding: 2rem; background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; position: relative;
+  }
+  .step-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3rem; font-weight: 700; color: var(--border);
+    line-height: 1; margin-bottom: 1rem;
+  }
+  .step h4 { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 600; margin-bottom: .5rem; }
+  .step p { color: var(--muted); font-size: .85rem; line-height: 1.6; }
+
+  /* ── CTA FINAL ── */
+  .cta-section {
+    text-align: center; padding: 8rem 6%;
+    position: relative; overflow: hidden;
+  }
+  .cta-section::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,229,200,.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700; letter-spacing: -.03em;
+    margin-bottom: 1rem; position: relative;
+  }
+  .cta-section p { color: var(--muted); font-size: 1.1rem; margin-bottom: 2.5rem; position: relative; }
+
+  /* ── FORM ── */
+  .contact-form {
+    max-width: 480px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 1rem;
+    position: relative;
+  }
+  .form-row { display: flex; gap: 1rem; }
+  input, select, textarea {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border);
+    color: var(--white); padding: .85rem 1rem; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: .95rem;
+    transition: border-color .2s; outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: rgba(0,229,200,.5); }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+  select option { background: var(--bg2); }
+  textarea { resize: vertical; min-height: 100px; }
+  .btn-submit {
+    background: var(--accent); color: #000;
+    padding: 1rem; border-radius: 8px; border: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 0 30px rgba(0,229,200,.3);
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,229,200,.5); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 6%;
+    display: flex; align-items: center; justify-content: space-between;
+    color: var(--muted); font-size: .85rem; flex-wrap: wrap; gap: 1rem;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 8rem; }
+    .demo-window { display: none; }
+    .services-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 600px) {
+    .steps { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
+    .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Flow<span>Mind</span></div>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proceso">Cómo funciona</a></li>
+    <li><a href="#contacto">Precios</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Pedir demo gratis</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">IA para empresas españolas</div>
+    <h1>Tu negocio atiende clientes mientras <em>tú duermes</em></h1>
+    <p class="hero-sub">Automatizamos las conversaciones con tus clientes usando inteligencia artificial. WhatsApp, llamadas y reservas de citas — sin que tengas que estar pendiente.</p>
+    <div class="hero-btns">
+      <a href="#contacto" class="btn-primary">Ver demo gratis →</a>
+      <a href="#servicios" class="btn-secondary">¿Cómo funciona?</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Atención sin interrupciones</div>
+      </div>
+      <div>
+        <div class="stat-num">3 días</div>
+        <div class="stat-label">Para estar operativo</div>
+      </div>
+      <div>
+        <div class="stat-num">+60%</div>
+        <div class="stat-label">Más leads captados</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT DEMO -->
+  <div class="demo-window" id="demoWindow">
+    <div class="demo-header">
+      <div class="demo-avatar">FM</div>
+      <div>
+        <div class="demo-name">Asistente FlowMind</div>
+        <div class="demo-status">En línea ahora</div>
+      </div>
+      <div class="demo-dot"></div>
+    </div>
+    <div class="demo-body" id="demoBody">
+      <!-- mensajes inyectados por JS -->
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="section-label">Nuestros servicios</div>
+  <h2 class="section-title">Todo lo que necesitas para automatizar tu negocio</h2>
+  <p class="section-sub">Tres productos listos para instalar. Elige el que más encaja con tu empresa o llévate el pack completo.</p>
+
+  <div class="services-grid">
+    <!-- CHATBOT -->
+    <div class="service-card featured">
+      <div class="service-icon icon-1">💬</div>
+      <h3>Chatbot Inteligente</h3>
+      <p>Tu asistente de WhatsApp que responde al instante, captura leads y agenda citas automáticamente.</p>
+      <ul class="service-features">
+        <li>Responde consultas 24/7 en WhatsApp</li>
+        <li>Captura nombre, email y teléfono</li>
+        <li>Agenda citas en tu calendario</li>
+        <li>Escala a humano cuando hace falta</li>
+        <li>Instalado y operativo en 48h</li>
+      </ul>
+      <div class="service-price">
+        <span class="price-amount">297€</span>
+        <span class="price-period">/mes</span>
+      </div>
+      <a href="#contacto" class="btn-card-accent">Empezar ahora</a>
+    </div>
+
+    <!-- BOT VOZ -->
+    <div class="service-card">
+      <div class="service-icon icon-2">🎙️</div>
+      <h3>Bot de Voz con IA</h3>
+      <p>Sistema telefónico con tu voz clonada. Atiende llamadas, responde preguntas y gestiona reservas.</p>
+      <ul class="service-features">
+        <li>Clonación de tu voz en 30 segundos</li>
+        <li>Atiende llamadas en tu número actual</li>
+        <li>Conversación natural con IA</li>
+        <li>Gestiona citas y consultas</li>
+        <li>Atención 24/7 sin coste de personal</li>
+      </ul>
+      <div class="service-price">
+        <span class="price-amount">497€</span>
+        <span class="price-period">/mes</span>
+      </div>
+      <a href="#contacto" class="btn-card">Pedir demo</a>
+    </div>
+
+    <!-- CALENDARIO -->
+    <div class="service-card">
+      <div class="service-icon icon-3">📅</div>
+      <h3>Gestión de Citas</h3>
+      <p>Sincronización automática con tu calendario. El sistema detecta huecos libres y reserva sin intervención.</p>
+      <ul class="service-features">
+        <li>Conectado a tu Google Calendar</li>
+        <li>Detecta disponibilidad en tiempo real</li>
+        <li>Confirmación por email y WhatsApp</li>
+        <li>Recordatorios automáticos 24h antes</li>
+        <li>Compatible con cualquier calendario</li>
+      </ul>
+      <div class="service-price">
+        <span class="price-amount">197€</span>
+        <span class="price-period">/mes</span>
+      </div>
+      <a href="#contacto" class="btn-card">Pedir demo</a>
+    </div>
+  </div>
+
+  <!-- PACK -->
+  <div class="pack-banner">
+    <div class="pack-left">
+      <h3>Pack Completo — Los 3 servicios</h3>
+      <p>Chatbot + Bot de Voz + Gestión de Citas. Todo integrado, todo automatizado.</p>
+    </div>
+    <div style="text-align:center">
+      <div class="pack-original">991€/mes por separado</div>
+      <div class="pack-price">797€<span style="font-size:1.2rem;font-weight:400">/mes</span></div>
+    </div>
+    <a href="#contacto" class="btn-primary">Quiero el pack completo</a>
+  </div>
+</section>
+
+<!-- PROCESO -->
+<section class="proceso" id="proceso">
+  <div class="section-label">Cómo funciona</div>
+  <h2 class="section-title">De cero a operativo en 3 días</h2>
+  <p class="section-sub">Sin complicaciones técnicas. Nosotros nos encargamos de todo el proceso de instalación.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h4>Demo gratuita</h4>
+      <p>Agendamos una llamada de 30 minutos para entender tu negocio y mostrarte cómo funcionaría en tu caso.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h4>Personalización</h4>
+      <p>Configuramos el asistente con el tono, información y flujos específicos para tu empresa.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h4>Instalación</h4>
+      <p>Conectamos todo con tus herramientas actuales. Sin cambiar lo que ya usas, sin complicaciones.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h4>En producción</h4>
+      <p>Tu negocio empieza a capturar leads y agendar citas automáticamente. Tú solo revisas los resultados.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA CONTACTO -->
+<section class="cta-section" id="contacto">
+  <h2>¿Listo para automatizar tu negocio?</h2>
+  <p>Pide tu demo gratuita. Sin compromiso, sin permanencia.</p>
+  <div class="contact-form">
+    <div class="form-row">
+      <input type="text" placeholder="Tu nombre" id="fname">
+      <input type="text" placeholder="Empresa" id="fcompany">
+    </div>
+    <input type="email" placeholder="Email de contacto" id="femail">
+    <input type="tel" placeholder="WhatsApp / teléfono" id="fphone">
+    <select id="fservice">
+      <option value="">¿Qué servicio te interesa?</option>
+      <option>Chatbot Inteligente — 297€/mes</option>
+      <option>Bot de Voz con IA — 497€/mes</option>
+      <option>Gestión de Citas — 197€/mes</option>
+      <option>Pack Completo — 797€/mes</option>
+    </select>
+    <button class="btn-submit" onclick="handleSubmit()">Pedir demo gratuita →</button>
+    <p style="color:var(--muted);font-size:.8rem;text-align:center" id="formMsg"></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo" style="font-size:1.1rem">Flow<span style="color:var(--accent)">Mind</span></div>
+  <div>Automatizaciones con IA para empresas · España</div>
+  <div>© 2025 FlowMind</div>
+</footer>
+
+<script>
+// ── Chat demo animado ──────────────────────────────────────────────────────
+const messages = [
+  { type:'bot', text:'¡Hola! Soy el asistente de la clínica. ¿En qué puedo ayudarte? 😊', time:'12:01' },
+  { type:'user', text:'Quiero pedir cita para esta semana', time:'12:01' },
+  { type:'bot', text:'Claro, tengo disponibilidad el miércoles a las 10h o el jueves a las 17h. ¿Cuál te viene mejor?', time:'12:01' },
+  { type:'user', text:'El jueves a las 17h', time:'12:02' },
+  { type:'bot', text:'✅ Cita confirmada para el jueves a las 17:00h. Te mando la confirmación ahora mismo. ¡Hasta el jueves!', time:'12:02' },
+];
+
+let msgIndex = 0;
+const body = document.getElementById('demoBody');
+
+function showTyping() {
+  const t = document.createElement('div');
+  t.className = 'msg bot show'; t.id = 'typing';
+  t.innerHTML = '<div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  body.appendChild(t);
+  body.scrollTop = body.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function showNext() {
+  if (msgIndex >= messages.length) {
+    setTimeout(() => { body.innerHTML = ''; msgIndex = 0; setTimeout(runDemo, 1500); }, 3000);
+    return;
+  }
+  const m = messages[msgIndex++];
+  if (m.type === 'bot') {
+    showTyping();
+    setTimeout(() => {
+      removeTyping();
+      addMsg(m);
+      setTimeout(showNext, m.type === 'bot' ? 1800 : 1200);
+    }, 1000);
+  } else {
+    addMsg(m);
+    setTimeout(showNext, 1200);
+  }
+}
+
+function addMsg(m) {
+  const el = document.createElement('div');
+  el.className = `msg ${m.type} show`;
+  el.innerHTML = `<div class="msg-bubble">${m.text}</div><div class="msg-time">${m.time}</div>`;
+  body.appendChild(el);
+  body.scrollTop = body.scrollHeight;
+}
+
+function runDemo() { setTimeout(showNext, 800); }
+runDemo();
+
+// ── Form submit ─────────────────────────────────────────────────────────────
+function handleSubmit() {
+  const name    = document.getElementById('fname').value.trim();
+  const email   = document.getElementById('femail').value.trim();
+  const phone   = document.getElementById('fphone').value.trim();
+  const service = document.getElementById('fservice').value;
+  const msg     = document.getElementById('formMsg');
+
+  if (!name || !email || !phone || !service) {
+    msg.style.color = '#f87171';
+    msg.textContent = 'Por favor rellena todos los campos.';
+    return;
+  }
+  msg.style.color = 'var(--accent)';
+  msg.textContent = '✅ ¡Recibido! Te contactamos en menos de 24h para agendar tu demo.';
+  document.querySelector('.btn-submit').disabled = true;
+  document.querySelector('.btn-submit').textContent = 'Enviado ✓';
+}
+</script>
+
+</body>
+</html>
